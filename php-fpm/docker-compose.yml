@@ -1,0 +1,36 @@
+version: "3.7"
+
+services:
+  db:
+    image: mariadb:latest
+    volumes:
+      - ./db_data:/var/lib/mysql
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: somewordpress
+      MYSQL_DATABASE: wordpress
+      MYSQL_USER: wordpress
+      MYSQL_PASSWORD: qC6vN8sR2pV5mF7l
+
+  wordpress:
+    depends_on:
+      - db
+    image: wordpress:fpm
+    restart: always
+    volumes:
+      - ./wordpress_data:/var/www/html
+    environment:
+      WORDPRESS_DB_HOST: db:3306
+      WORDPRESS_DB_USER: wordpress
+      WORDPRESS_DB_PASSWORD: qC6vN8sR2pV5mF7l
+      WORDPRESS_DB_NAME: wordpress
+
+  webserver:
+    depends_on:
+      - wordpress
+    image: nginx:latest
+    volumes:
+      - ./nginx-conf:/etc/nginx/conf.d
+      - ./wordpress_data:/var/www/html
+    ports:
+      - "8080:80"
